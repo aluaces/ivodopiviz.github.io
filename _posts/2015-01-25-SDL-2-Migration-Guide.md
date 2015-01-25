@@ -9,7 +9,7 @@ Luego de muchos años de desarrollo, ¡SDL 2.0 ha sido finalmente liberada!
 
 Estamos bastante orgullosos de esto, y nos gustaría que los juegos que utilizan SDL 1.2 migraran rápido. Como sabemos que puede ser una tarea intimidante, este documento es una simple guía de cómo migrar a la nueva librería. Creemos que descubrirás que no es tan difícil como piensas y, muchas veces, simplemente tendrás que reemplazar algunos llamados a función o deshacer "hacks" en tu código causados por deficiencias de la versión 1.2.
 
-Creemos que SDL 2.0 va a hacerte feliz, por sus características nuevas y por una mejor experiencia con respecto a SDL 1.2. Este documento no trata de cubrir todas las funcionalidades nuevas de SDL2 - que son muchas - sino sólo aquellas cosas que necesitas para empezar a trabajar. Una vez que hayas portado tu código, no dudes en chequear todo lo nuevo,probablemente quieras utilizarlo en tus aplicaciones.
+Creemos que SDL 2.0 va a satisfacerte tanto por sus características nuevas y por una mejor experiencia con respecto a SDL 1.2. Este documento no trata de cubrir todas las funcionalidades nuevas de SDL2 - que son muchas - sino sólo aquellas cosas que necesitas para empezar a trabajar. Una vez que hayas portado tu código, no dudes en chequear todo lo nuevo,probablemente quieras utilizarlo en tus aplicaciones.
 
 ##Vistazo de características nuevas
 
@@ -88,9 +88,13 @@ Así que probablemente si algo así:
 Ahora debería ser:
 
 	SDL_Window *screen = SDL_CreateWindow("My Game Window",
-    	                      SDL_WINDOWPOS_UNDEFINED,
-        	                  SDL_WINDOWPOS_UNDEFINED,
-            	              640, 480,
-                	          SDL_WINDOW_FULLSCREEN | SDL_WINDOW_OPENGL);
+    	                    SDL_WINDOWPOS_UNDEFINED,
+        	                SDL_WINDOWPOS_UNDEFINED,
+            	            640, 480,
+                	        SDL_WINDOW_FULLSCREEN | SDL_WINDOW_OPENGL);
 
-Notarás que es bastante similar a 1.2. La diferencia es que ahora es posible tener varias ventanas (si quieres) y tienes más control sobre ellas.
+Notarás que es bastante similar a 1.2. La diferencia es que ahora es posible tener varias ventanas (si quieres) y tienes más control sobre ellas. SDL_WM_SetCaption ya no existe, porque es necesatio que cada ventana pueda tener un título propio (puedes cambiarlo usando SDL_SetWindowTitle()) y que sea posible darle una posición específica. En este caso utilizamos SDL_WINDOWPOS_UNDEFINED porque no nos preocupa dónde se ubique la ventana. También es posible utilizar SDL_WINDOWPOS_CENTERED.
+
+Extra credit for letting users specify a display for the window: SDL2 also allows you to manage systems with multiple monitors. Don't worry about that right now, though.
+
+So now that your window is back on the screen, let's talk strategy. SDL2 still has SDL_Surface, but what you want, if possible, is the new SDL_Texture. Surfaces are always in system RAM now, and are always operated on by the CPU, so we want to get away from there. SDL2 has a new rendering API. It's meant for use by simple 2D games, but most notably, it's meant to get all that software rendering into video RAM and onto the GPU. And even if you just want to use it to get your software renderer's work to the screen, it brings some very nice benefits: if possible, it will use OpenGL or Direct3D behind the scenes, which means you'll get faster blits, a working Steam Overlay, and scaling for free. 
