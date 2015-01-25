@@ -81,3 +81,8 @@ Si tu juego es 2D, lo más probable es que hayas seguido alguna de las siguiente
 ¿Recuerdas a SDL_SetVideoMode()? No existe más. SDL 2.0 te permite tener varias ventanas, así que esa función ya no tenía mucho sentido.
 
 Así que probablemente tenías algo así:
+
+```
+SDL_WM_SetCaption("My Game Window", "game");
+SDL_Surface *screen = SDL_SetVideoMode(640, 480, 0, SDL_FULLSCREEN | SDL_OPENGL);
+```
