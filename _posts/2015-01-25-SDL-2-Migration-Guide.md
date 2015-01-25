@@ -95,6 +95,26 @@ Ahora debería ser:
 
 Notarás que es bastante similar a 1.2. La diferencia es que ahora es posible tener varias ventanas (si quieres) y tienes más control sobre ellas. SDL_WM_SetCaption ya no existe, porque es necesatio que cada ventana pueda tener un título propio (puedes cambiarlo usando SDL_SetWindowTitle()) y que sea posible darle una posición específica. En este caso utilizamos SDL_WINDOWPOS_UNDEFINED porque no nos preocupa dónde se ubique la ventana. También es posible utilizar SDL_WINDOWPOS_CENTERED.
 
-Extra credit for letting users specify a display for the window: SDL2 also allows you to manage systems with multiple monitors. Don't worry about that right now, though.
+Además, es posible especificar una pantalla: SDL2 te permite trabajar con equipos con monitores múltiples. No es necesario que te preocupes por eso por ahora, sin embargo.
 
-So now that your window is back on the screen, let's talk strategy. SDL2 still has SDL_Surface, but what you want, if possible, is the new SDL_Texture. Surfaces are always in system RAM now, and are always operated on by the CPU, so we want to get away from there. SDL2 has a new rendering API. It's meant for use by simple 2D games, but most notably, it's meant to get all that software rendering into video RAM and onto the GPU. And even if you just want to use it to get your software renderer's work to the screen, it brings some very nice benefits: if possible, it will use OpenGL or Direct3D behind the scenes, which means you'll get faster blits, a working Steam Overlay, and scaling for free. 
+Ahora que tu ventana esta lista, hablemos de estrategia. SDL2 sigue teniendo SDL_Surface pero, de ser posible, deberías utilizar SDL_Texture. Ahora las "surface" siempre se encuentran en RAM y son controladas por el CPU, así que es mejor evitarlas. SDL2 tiene una API de renderizado nueva, pensada para juegos 2D simples pero por sobre todo para utilizar el GPU y la memoria de video lo más posible. Incluso si sólo deseas mostrar en pantalla tu render por software, tienes el siguiente beneficio: de ser posible se utilizará OpenGL o Direct3D lo cual significa que tendrás "blits" más rápidos, reescalado de pantalla "gratis" y será posible utilizar el Steam Overlay.
+
+El procedimiento ahora es así:
+
+Como ya dijimos, en vez de SDL_SetVideoMode() utilizamos SDL_CreateWindow(). ¿Pero qué resolución utilizamos? Si tu juego está fijo a 640x480, por ejemplo, seguro pasaba que ciertos monitores no podían poner ese tamaño en pantalla completa y en ventana tu juego se veía demasiado pequeño. Con SDL2 es posible solucionar eso.
+
+Ya no utilizamos SDL_ListModes(). Hay algo parecido en SDL2 (llamar SDL_GetDisplayMode() en un bucle tantas veces como diga SDL_GetNumDisplayModes()), pero en vez de eso vamos a utilizar una nueva característica llamada "escritorio a pantalla completa" que básicamente le dice a SDL: "dame la pantalla completa y no cambies la resolución". Para nuestro juego a 640x480, sería algo así:
+
+	SDL_Window *sdlWindow = SDL_CreateWindow(title,
+    	                        SDL_WINDOWPOS_UNDEFINED,
+        	                    SDL_WINDOWPOS_UNDEFINED,
+            	                0, 0,
+                	            SDL_WINDOW_FULLSCREEN_DESKTOP);
+
+Si te fijas, no especificamos 640 o 480... escritorio a pantalla completa te da justamente la pantalla completa e ignora las dimensiones que le pases. La ventana de tu juego debería aparecer instantáneamente en vez de esperar a que el monitor cambie de resolución y con esto vamos a utilizar el GPU para escalar todo a la resolución del escritorio. Esto es generalmente lo mejor y más rápido en caso de que una pantalla LCD esté simulando correr a una resolución menor. Como "bonus": no es necesario redimensionar el resto de las ventanas que estén corriendo.
+
+Ahora necesitamos un contexto de renderizado.
+
+	SDL_Renderer *renderer = SDL_CreateRenderer(sdlWindow, -1, 0);
+
+A renderer hides the details of how we draw into the window. This might be using Direct3D, OpenGL, OpenGL ES, or software surfaces behind the scenes, depending on what the system offers; your code doesn't change, regardless of what SDL chooses (although you are welcome to force one kind of renderer or another). If you want to attempt to force sync-to-vblank to reduce tearing, you can use SDL_RENDERER_PRESENTVSYNC instead of zero for the third parameter. You shouldn't create a window with the SDL_WINDOW_OPENGL flag here. If SDL_CreateRenderer() decides it wants to use OpenGL, it'll update the window appropriately for you. 
