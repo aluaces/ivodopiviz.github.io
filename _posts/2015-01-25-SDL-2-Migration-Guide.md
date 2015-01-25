@@ -88,10 +88,10 @@ Así que probablemente si algo así:
 Ahora debería ser:
 
 	SDL_Window *screen = SDL_CreateWindow("My Game Window",
-    	                    SDL_WINDOWPOS_UNDEFINED,
-        	                SDL_WINDOWPOS_UNDEFINED,
-            	            640, 480,
-                	        SDL_WINDOW_FULLSCREEN | SDL_WINDOW_OPENGL);
+							SDL_WINDOWPOS_UNDEFINED,
+							SDL_WINDOWPOS_UNDEFINED,
+							640, 480,
+							SDL_WINDOW_FULLSCREEN | SDL_WINDOW_OPENGL);
 
 Notarás que es bastante similar a 1.2. La diferencia es que ahora es posible tener varias ventanas (si quieres) y tienes más control sobre ellas. SDL_WM_SetCaption ya no existe, porque es necesatio que cada ventana pueda tener un título propio (puedes cambiarlo usando SDL_SetWindowTitle()) y que sea posible darle una posición específica. En este caso utilizamos SDL_WINDOWPOS_UNDEFINED porque no nos preocupa dónde se ubique la ventana. También es posible utilizar SDL_WINDOWPOS_CENTERED.
 
@@ -106,10 +106,10 @@ Como ya dijimos, en vez de SDL_SetVideoMode() utilizamos SDL_CreateWindow(). ¿P
 Ya no utilizamos SDL_ListModes(). Hay algo parecido en SDL2 (llamar SDL_GetDisplayMode() en un bucle tantas veces como diga SDL_GetNumDisplayModes()), pero en vez de eso vamos a utilizar una nueva característica llamada "escritorio a pantalla completa" que básicamente le dice a SDL: "dame la pantalla completa y no cambies la resolución". Para nuestro juego a 640x480, sería algo así:
 
 	SDL_Window *sdlWindow = SDL_CreateWindow(title,
-    	                        SDL_WINDOWPOS_UNDEFINED,
-        	                    SDL_WINDOWPOS_UNDEFINED,
-            	                0, 0,
-                	            SDL_WINDOW_FULLSCREEN_DESKTOP);
+								SDL_WINDOWPOS_UNDEFINED,
+								SDL_WINDOWPOS_UNDEFINED,
+								0, 0,
+								SDL_WINDOW_FULLSCREEN_DESKTOP);
 
 Si te fijas, no especificamos 640 o 480... escritorio a pantalla completa te da justamente la pantalla completa e ignora las dimensiones que le pases. La ventana de tu juego debería aparecer instantáneamente en vez de esperar a que el monitor cambie de resolución y con esto vamos a utilizar el GPU para escalar todo a la resolución del escritorio. Esto es generalmente lo mejor y más rápido en caso de que una pantalla LCD esté simulando correr a una resolución menor. Como "bonus": no es necesario redimensionar el resto de las ventanas que estén corriendo.
 
@@ -117,4 +117,18 @@ Ahora necesitamos un contexto de renderizado.
 
 	SDL_Renderer *renderer = SDL_CreateRenderer(sdlWindow, -1, 0);
 
-A renderer hides the details of how we draw into the window. This might be using Direct3D, OpenGL, OpenGL ES, or software surfaces behind the scenes, depending on what the system offers; your code doesn't change, regardless of what SDL chooses (although you are welcome to force one kind of renderer or another). If you want to attempt to force sync-to-vblank to reduce tearing, you can use SDL_RENDERER_PRESENTVSYNC instead of zero for the third parameter. You shouldn't create a window with the SDL_WINDOW_OPENGL flag here. If SDL_CreateRenderer() decides it wants to use OpenGL, it'll update the window appropriately for you. 
+El "renderer" abstrae todos los detalles de cómo se dibuja en la ventana. Puede estar utilizando Direct3D, OpenGL, OpenGL ES o "software surfaces", dependiendo del sistema, pero tu código siempre será el mismo. Es posible, sin embargo, forzar un renderer específico. Si deseas forzar la sincronización con vblank para reducir artefactos gráficos, puedes utilizar SDL_RENDERER_PRESENTVSYNC en vez de cero como tercer parámetro. No deberías especificar SDL_WINDOW_OPENGL directamente: si SDL_CreateRenderer() decide utilizar OpengGL, va a actualizar la ventana de manera apropiada.
+
+Ahora que sabes cómo funciona esto, es posible hacerlo en un sólo paso utilizando SDL_CreateWindowAndRenderer(). Un ejemplo simple:
+
+	SDL_Window *sdlWindow;
+	SDL_Renderer *sdlRenderer;
+	SDL_CreateWindowAndRenderer(0, 0, SDL_WINDOW_FULLSCREEN_DESKTOP, &sdlWindow, &sdlRenderer);
+
+Asumiendo que ninguna de las funciones falló (¡siempre hay que chequear NULLs!), estamos listos para comenzar a dinujar en la pantalla. Empecemos por "limpiarla" usando color negro:
+
+	SDL_SetRenderDrawColor(sdlRenderer, 0, 0, 0, 255);
+	SDL_RenderClear(sdlRenderer);
+	SDL_RenderPresent(sdlRenderer);
+
+This works like you might think; draw in black (r,g,b all zero, alpha full), clear the whole window, put the cleared window on the screen. That's right, if you've been using SDL_UpdateRect() or SDL_Flip() to get your bits to the screen, the render API uses SDL_RenderPresent().
