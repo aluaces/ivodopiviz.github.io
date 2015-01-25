@@ -86,3 +86,10 @@ Así que probablemente tenías algo así:
 SDL_WM_SetCaption("My Game Window", "game");
 SDL_Surface *screen = SDL_SetVideoMode(640, 480, 0, SDL_FULLSCREEN | SDL_OPENGL);
 ```
+
+```C
+require 'redcarpet'
+markdown = Redcarpet.new("SDL_WM_SetCaption(\"My Game Window\", \"game\");\n
+SDL_Surface *screen = SDL_SetVideoMode(640, 480, 0, SDL_FULLSCREEN | SDL_OPENGL);")
+puts markdown.to_html
+```
