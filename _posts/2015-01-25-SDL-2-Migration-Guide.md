@@ -80,16 +80,17 @@ Si tu juego es 2D, lo más probable es que hayas seguido alguna de las siguiente
 
 ¿Recuerdas a SDL_SetVideoMode()? No existe más. SDL 2.0 te permite tener varias ventanas, así que esa función ya no tenía mucho sentido.
 
-Así que probablemente tenías algo así:
+Así que probablemente si algo así:
 
-```
-SDL_WM_SetCaption("My Game Window", "game");
-SDL_Surface *screen = SDL_SetVideoMode(640, 480, 0, SDL_FULLSCREEN | SDL_OPENGL);
-```
+	SDL_WM_SetCaption("My Game Window", "game");
+	SDL_Surface *screen = SDL_SetVideoMode(640, 480, 0, SDL_FULLSCREEN | SDL_OPENGL);
 
-```C
-require 'redcarpet'
-markdown = Redcarpet.new("SDL_WM_SetCaption(\"My Game Window\", \"game\");\n
-SDL_Surface *screen = SDL_SetVideoMode(640, 480, 0, SDL_FULLSCREEN | SDL_OPENGL);")
-puts markdown.to_html
-```
+Ahora debería ser:
+
+	SDL_Window *screen = SDL_CreateWindow("My Game Window",
+    	                      SDL_WINDOWPOS_UNDEFINED,
+        	                  SDL_WINDOWPOS_UNDEFINED,
+            	              640, 480,
+                	          SDL_WINDOW_FULLSCREEN | SDL_WINDOW_OPENGL);
+
+Notarás que es bastante similar a 1.2. La diferencia es que ahora es posible tener varias ventanas (si quieres) y tienes más control sobre ellas.
