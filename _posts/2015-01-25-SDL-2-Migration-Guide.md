@@ -131,4 +131,15 @@ Asumiendo que ninguna de las funciones falló (¡siempre hay que chequear NULLs!
 	SDL_RenderClear(sdlRenderer);
 	SDL_RenderPresent(sdlRenderer);
 
-This works like you might think; draw in black (r,g,b all zero, alpha full), clear the whole window, put the cleared window on the screen. That's right, if you've been using SDL_UpdateRect() or SDL_Flip() to get your bits to the screen, the render API uses SDL_RenderPresent().
+Probablemente imagines cómo funciona esto: dibujamos con color negro (r, g y b en cero, alpha opaco), limpiamos la ventana completa y presentamos la ventana limpia en la pantalla. De la misma manera que antes usaba SDL_UpdateRect() o SDL_Flip(), ahora se utiliza SDL_RenderPresent().
+
+Una cosa más: Como estamos utilizando SDL_WINDOW_FULLSCREEN_DESKTOP, no sabemos realmente el tamaño de la pantalla en la que estamos dibujando. Afortunadamente, no necesitamos saberlo. Una de las mejores cosas de 1.2 es que era posible decirle "Quiero una ventana de 640x480 y no me importa cómo lo logres", incluso si eso implicaba mostrar una ventana pequeña centrada en una resolución más grande.
+
+En 2.0, la API de render nos permite hacer lo siguiente:
+
+	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");  // hacemos que el render escalado se vea mejor
+	SDL_RenderSetLogicalSize(sdlRenderer, 640, 480);
+
+Esto nos permite tener tener una resolución lógica independiente de la resolución final de presentación. Gracias a esto, en vez de tratar de hacer que el sistema funcione a la resolución que nosotros renderizamos, cambiamos la resolución de renderizado para que funcione acorde al sistema. En mi pantalla de 1920x1200, esta aplicación cree que está trabajando con una pantalla 640x480, pero SDL está utilizando el GPU para escalar el renderizado y utilizar todos los pixels. Es importante notar que 640x480 y 1920x1200 no tienen la misma relación de aspecto: SDL tratará de escalar lo más que pueda e incluirá un marco de color para la diferencia.
+
+Ya podemos empezar a dibujar de verdad.
