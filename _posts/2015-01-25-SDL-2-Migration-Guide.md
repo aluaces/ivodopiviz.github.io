@@ -227,4 +227,11 @@ Ten en cuenta que crear texturas no es gratis: no llames SDL_CreateTextureFromSu
 
 La API de Render posee muchas otras características, algunas de las cuales probablemente puedan reemplazar código que antes escribías a mano: escalado, dibujado de líneas, etc. Si tus necesidades a la hora del renderizado no son muy complejas, probablemente te convenga dejar de modificar pixels a mano y mover todo al GPU. Tu programa funcionará más rápido y probablemente puedas simplificar notablemente tu código.
 
-###Other Renderer API notes
+###Misceláneas sobre la Renderer API
+
+Puedes realizar algunos efectos simples con la Renderer API sin necesidad de manipular directamente información de pixels. Algunos de los siguientes eran soportados en surfaces de SDL 1.2.
+
+* Alpha de color: SDL_Color ahora tiene un cuarto componente dedicado al valor de alpha (transparencia). Probablemente tu código no utilizaba este valor en 1.2, en 2.0 deberías hacerlo.
+* Alpha blending: utiliza SDL_SetSurfaceAlphaMod y SDL_SetTextureAlphaMod en vez de SDL_SetAlpha(). Es posible desactivar alpha blending en surfaces usando SDL_SetSurfaceBlendMode() y en texturas utilizando SDL_SetTextureBlendMode().
+* Colorky: Cuando llames SDL_SetColorKey(), deberás pasarle como parámetro SDL_TRUE en vez de SDL_SRCCOLORKEY.
+* Modulación de color: Algunos renderer soportan alteraciones globales de color (srcC = srcC * color), puedes ver más detalles en SDL_SetTextureColorMod().
