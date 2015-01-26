@@ -175,7 +175,7 @@ Ahora pongamos esta textura en pantalla:
 
 Y eso es todo. SDL_RenderClear() limpia el contenido del framebuffer (por las dudas de que, digamos, el Steam Overlay lo haya modificado en el cuadro anterior), SDL_RenderCopy() mueve el contenido de la textura al framebuffer (y gracias a SDL_RenderSetLogicalSize(), lo hará de manera escalada/centrada como si el monitor fuera de 640x480) y SDL_RenderPresent() lo presentará en la pantalla.
 
-###Si tu juego quiere "blitear" surfaces a la pantalla
+###Si tu juego requiere "blitear" surfaces a la pantalla
 
 En este ejemplo suponemos que tu juego basado en SDL 1.2 carga imágenes desde archivo y las guarda en SDLSurfaces, probablemente tratando de ubicarlas en memoria de video utilizando SDL_HWSURFACE. Las cargas una vez y las "bliteas" una y otra vez en el framebuffer tanto como sea necesario, en general sin modificarlas. Como haríamos en un plataformero 2D simple, por poner un ejemplo. En líneas generales, si utilizas tus surfaces como "sprites", probablemente este sea tu caso de uso.
 
@@ -186,4 +186,43 @@ Puedes crear texturas individuales (surfaces ubicadas en memoria de GPU) de la m
 								SDL_TEXTUREACCESS_STATIC,
 								myWidth, myHeight);
 
-Which does what you'd expect. We use SDL_TEXTUREACCESS_STATIC, because we're going to upload our pixels once instead of over and over. But a more convenient solution might be: 
+En este caso, utilizamos SDL_TEXTUREACCESS_STATIC, porque vamos a "subir" los pixels sólo una vez y no repetidas veces. Pero una una mejor solución sería:
+
+	sdlTexture = SDL_CreateTextureFromSurface(sdlRenderer, mySurface);
+
+De esta manera, cargas tu SDL_Surface de la manera usual pero al final creamos una textura a partur de la misma. Una vez que tienes tu SDL_Texture es posible librerar la surface original.
+
+Para este momento, tu juego utilizando SDL 1.2 tendría unas cuantas SDL_Surfaces que dibujarias en la surface de pantalla utilizando SDL_BlitSurface() para componer el framebuffer final, eventualmente utilizando SDL_Flip() para presentarlo en pantalla. En SDL 2.0 tendrás SDL_Textures que vas a copiar a tu Renderer con SDL_RenderCopy() para componer el mismo framebuffer, presentándolo en pantalla a su vez con SDL_RenderPresent(). Así de simple. Si nuncas modificas dichas texturas, probablemente notes un aumento dramático en tu framerate.
+
+###Si necesitas ambas
+
+La cosa se complica un poco si necesitas blitear surfaces y modificar pixels individuales en el framebuffer. Leer y escribir datos desde texturas de GPU puede ser terriblemente costoso en cuanto a rendimiento; en líneas generales lo mejor es enviar los datos siempre en el mismo sentido. En este caso, la mejor idea es mantener todo en modo software hasta que esté listo para ser enviado a la pantalla. Para esto, vamos a combinar las dos técnicas anteriores.
+
+La buena noticia es que la API de SDL_Surface se mantiene prácticamente completa con respecto a SDL 1.2. Así que puedes cambiar tu surface de pantalla de esto:
+
+	SDL_Surface *screen = SDL_SetVideoMode(640, 480, 32, 0);
+
+A esto:
+
+	// if all this hex scares you, check out SDL_PixelFormatEnumToMasks()!
+	SDL_Surface *screen = SDL_CreateRGBSurface(0, 640, 480, 32,
+										0x00FF0000,
+										0x0000FF00,
+										0x000000FF,
+										0xFF000000);
+
+	SDL_Texture *sdlTexture = SDL_CreateTexture(sdlRenderer,
+											SDL_PIXELFORMAT_ARGB8888,
+											SDL_TEXTUREACCESS_STREAMING,
+											640, 480);
+
+...and continue blitting things around and tweaking pixels as before, composing your final framebuffer into this SDL_Surface. Once you're ready to get those pixels on the screen, you do this just like in our first scenario: 
+
+	SDL_UpdateTexture(sdlTexture, NULL, screen->pixels, screen->pitch);
+	SDL_RenderClear(sdlRenderer);
+	SDL_RenderCopy(sdlRenderer, sdlTexture, NULL, NULL);
+	SDL_RenderPresent(sdlRenderer);
+
+Note that texture creation may be both expensive and a limited resource: don't call SDL_CreateTextureFromSurface() every frame. Set up one texture and one surface and update the former from the latter.
+
+There are more features to the Render API, some of which may be able to replace your application's code: scaling, line drawing, etc. If you are reading this section because you have simple needs beyond blitting surfaces, you might be able to stop poking individual pixels and move everything onto the GPU, which will give your program a significant speed boost and probably simplify your code greatly. 
