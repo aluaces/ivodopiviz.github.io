@@ -244,3 +244,43 @@ Si utilizabas SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, x), necesitas hacer algun
 
 Ahora SDL 2.0 es posible intercambiar entre modo ventana / pantalla completa sin perder el contexto de OpenGL (hurra!). Puedes controlar esto usando SDL_SetWindowFullscreen().
 
+###Input
+
+The good news is that SDL 2.0 has made Unicode input usable. The bad news is that it will take some minor changes to your application.
+
+In 1.2, many applications that only cared about US English still called SDL_EnableUNICODE(1), because it was useful to get the character that was associated with a keypress. This didn't work well once you got outside of English, and it really didn't work at all once you got to Asian languages.
+
+It turns out, i18n is hard.
+
+SDL changed this. SDL_EnableUNICODE() is gone, and so is SDL_Keysym's unicode field. You no longer get character input from SDL_KEYDOWN events. Use SDL_KEYDOWN to treat the keyboard like a 101-button joystick now. Text input comes from somewhere else.
+
+The new event is SDL_TEXTINPUT. This is triggered whenever there's new text entered by the user. Note that this text might be coming from keypresses, or it might be coming from some sort of IME (which is a fancy way of entering complicated, multi-character text). This event returns entire strings, which might be one char long, or several codepoints of multi-character data. This string is always in UTF-8 encoding.
+
+If all you care about is whether the user pressed a certain key, that's still SDL_KEYDOWN, but we've split this system into two pieces since 1.2: keycodes and scancodes.
+
+Scancodes are meant to be layout-independent. Think of this as "the user pressed the Q key as it would be on a US QWERTY keyboard" regardless of whether this is actually a European keyboard or a Dvorak keyboard or whatever. The scancode is always the same key position.
+
+Keycodes are meant to be layout-dependent. Think of this as "the user pressed the key that is labelled 'Q' on a specific keyboard."
+
+In example, if you pressed the key that's two keys to the right of CAPS LOCK on a US QWERTY keyboard, it'll report a scancode of SDL_SCANCODE_S and a keycode of SDLK_S. The same key on a Dvorak keyboard, will report a scancode of SDL_SCANCODE_S and a keycode of SDLK_O.
+
+Note that both keycodes and scancodes are now 32 bits, and use a wide range of numbers. There's no SDLK_LAST anymore. If your program had a lookup table of SDLK_LAST elements, to map between SDL keys and whatever your application wanted internally, that's no longer feasible. Use a hash table instead. A std::map will do. If you're mapping scancodes instead of keycodes, there's SDL_NUM_SCANCODES, which you can use for array bounds. It's 512 at the moment.
+
+SDLMod is now SDL_Keymod and its "META" keys (the "Windows" keys) are now called the "GUI" keys.
+
+SDL_GetKeyState() has been renamed to SDL_GetKeyboardState(). The returned array should now be indexed by SDL_SCANCODE_* values (see SDL_Scancode) instead of SDL_Keysym values.
+
+Now, for mouse input.
+
+The first change, simply enough, is that the mousewheel is no longer a button. This was a mistake of history, and we've corrected it in SDL 2.0. Look for SDL_MOUSEWHEEL events. We support both vertical and horizontal wheels, and some platforms can treat two-finger scrolling on a trackpad as wheel input, too. You will no longer receive SDL_BUTTONDOWN events for mouse wheels, and buttons 4 and 5 are real mouse buttons now.
+
+If your game needed to roll the mouse in one direction forever, for example to let a player in an FPS to spin around without the mouse hitting the edge of the screen and stopping, you probably hid the mouse cursor and grabbed input:
+
+	SDL_ShowCursor(0);
+	SDL_WM_GrabInput(SDL_GRAB_ON);
+
+In SDL2, this works slightly differently. You call... 
+
+	SDL_SetRelativeMouseMode(SDL_TRUE);
+
+...and SDL does the rest.
