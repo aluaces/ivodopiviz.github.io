@@ -143,3 +143,18 @@ En 2.0, la API de render nos permite hacer lo siguiente:
 Esto nos permite tener tener una resolución lógica independiente de la resolución final de presentación. Gracias a esto, en vez de tratar de hacer que el sistema funcione a la resolución que nosotros renderizamos, cambiamos la resolución de renderizado para que funcione acorde al sistema. En mi pantalla de 1920x1200, esta aplicación cree que está trabajando con una pantalla 640x480, pero SDL está utilizando el GPU para escalar el renderizado y utilizar todos los pixels. Es importante notar que 640x480 y 1920x1200 no tienen la misma relación de aspecto: SDL tratará de escalar lo más que pueda e incluirá un marco de color para la diferencia.
 
 Ya podemos empezar a dibujar de verdad.
+
+###Si tu juego sólo necesita dibujar frames completos en la pantalla
+
+Un caso particular para juegos de la vieja escuelta que utilizan renderizado por software: la aplicación quiere dibujar cada pixel por sí misma y luego plasmar todo eso directamente en la pantalla en un solo "blit". Ejemplos de este tipo de juegos serían Doom, Duke Nukem 3D, entre otros.
+
+Para esto, sólo necesitas una SDL_Texture que va a representar la pantalla. Hagamos eso para nuestro juego a 640x480:
+
+	sdlTexture = SDL_CreateTexture(sdlRenderer,
+								SDL_PIXELFORMAT_ARGB8888,
+								SDL_TEXTUREACCESS_STREAMING,
+								640, 480);
+
+This represents a texture on the GPU. The gameplan is to finish each frame by uploading pixels to this texture, drawing the texture to the window, and flipping this drawing onto the screen. SDL_TEXTUREACCESS_STREAMING tells SDL that this texture's contents are going to change frequently.
+
+Before you probably had an SDL_Surface for the screen that your app drew into, then called SDL_Flip() to put to the screen. Now you can create an SDL_Surface that is always in RAM instead of using the one you would have gotten from SDL_SetVideoMode(), or just malloc() a block of pixels to write into. Ideally you write to a buffer of RGBA pixels, but if you need to do a conversion, that's okay too.
