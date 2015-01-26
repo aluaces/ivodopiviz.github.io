@@ -9,7 +9,7 @@ Luego de muchos años de desarrollo, ¡SDL 2.0 ha sido finalmente liberada!
 
 Estamos bastante orgullosos de esto, y nos gustaría que los juegos que utilizan SDL 1.2 migraran rápido. Como sabemos que puede ser una tarea intimidante, este documento es una simple guía de cómo migrar a la nueva librería. Creemos que descubrirás que no es tan difícil como piensas y, muchas veces, simplemente tendrás que reemplazar algunos llamados a función o deshacer "hacks" en tu código causados por deficiencias de la versión 1.2.
 
-Creemos que SDL 2.0 va a satisfacerte tanto por sus características nuevas y por una mejor experiencia con respecto a SDL 1.2. Este documento no trata de cubrir todas las funcionalidades nuevas de SDL2 - que son muchas - sino sólo aquellas cosas que necesitas para empezar a trabajar. Una vez que hayas portado tu código, no dudes en chequear todo lo nuevo,probablemente quieras utilizarlo en tus aplicaciones.
+Creemos que SDL 2.0 va a satisfacerte tanto por sus características nuevas y por una mejor experiencia con respecto a SDL 1.2. Este documento no trata de cubrir todas las funcionalidades nuevas de SDL2 - que son muchas - sino sólo aquellas cosas que necesitas para empezar a trabajar. Una vez que hayas portado tu código, no dudes en chequear todo lo nuevo: probablemente quieras utilizarlo en tus aplicaciones.
 
 ##Vistazo de características nuevas
 
@@ -155,6 +155,24 @@ Para esto, sólo necesitas una SDL_Texture que va a representar la pantalla. Hag
 								SDL_TEXTUREACCESS_STREAMING,
 								640, 480);
 
-This represents a texture on the GPU. The gameplan is to finish each frame by uploading pixels to this texture, drawing the texture to the window, and flipping this drawing onto the screen. SDL_TEXTUREACCESS_STREAMING tells SDL that this texture's contents are going to change frequently.
+Esto representa una textura en la GPU. La idea es generar cada frame guardando pixels en esta textura, dibujar la textura en la ventana y presentar la misma en la pantalla. SDL_TEXTUREACCESS_STREAMING le indica a SDL que el contenido de esta textura cambiará de manera frecuente.
 
-Before you probably had an SDL_Surface for the screen that your app drew into, then called SDL_Flip() to put to the screen. Now you can create an SDL_Surface that is always in RAM instead of using the one you would have gotten from SDL_SetVideoMode(), or just malloc() a block of pixels to write into. Ideally you write to a buffer of RGBA pixels, but if you need to do a conversion, that's okay too.
+Anteriormente, probablemente hayas utilizado una SDL_Surface dedicada a la pantalla y luego llamaras SDL_Flip() para mostrarla. Ahora es posible crear un SDL_Surface en RAM en vez de utilizar la que te hubiera dado SDL_SetVideoMode() o incluso simplemente utilizar malloc() para generar un bloque de pixels al cual puedas escribir. Idealmente, tus buffers deberían contener pixels RGBA, pero de todas maneras es posible realizar conversiones.
+
+	extern Uint32 *myPixels;  // esto puede ser surface->pixels, un buffer de malloc() o lo que sea.
+
+Al final del frame, necesitamos actualizar nuestra textura de la siguiente manera:
+
+	SDL_UpdateTexture(sdlTexture, NULL, myPixels, 640 * sizeof (Uint32));
+
+Esto va a "subir" nuestros pixels a memoria de GPU. En vez de NULL, es posible especificar un área en caso de utilizar "dirty rectangles", pero lo más probable es que no sea necesario gracias al hardware moderno. El último parametro es el "pitch" -el número de bytes desde el principio de una fila hasta la siguiente- y si tenemos en cuenta que en este ejemplo utilizamos un búfer RGBA lineal, el "pitch" es 640 veces 4 (r, g, b, a).
+
+Ahora pongamos esta textura en pantalla:
+
+	SDL_RenderClear(sdlRenderer);
+	SDL_RenderCopy(sdlRenderer, sdlTexture, NULL, NULL);
+	SDL_RenderPresent(sdlRenderer);
+
+Y eso es todo. SDL_RenderClear() limpia el contenido del framebuffer (por las dudas de que, digamos, el Steam Overlay lo haya modificado en el cuadro anterior), SDL_RenderCopy() mueve el contenido de la textura al framebuffer (y gracias a SDL_RenderSetLogicalSize(), lo hará de manera escalada/centrada como si el monitor fuera de 640x480) y SDL_RenderPresent() lo presentará en la pantalla.
+
+###If your game wants to blit surfaces to the screen
