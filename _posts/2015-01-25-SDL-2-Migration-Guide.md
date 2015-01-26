@@ -216,13 +216,15 @@ A esto:
 											SDL_TEXTUREACCESS_STREAMING,
 											640, 480);
 
-...and continue blitting things around and tweaking pixels as before, composing your final framebuffer into this SDL_Surface. Once you're ready to get those pixels on the screen, you do this just like in our first scenario: 
+...y sigue bliteando cosas y modificando pixels como lo hacías antes, componiendo tu framebuffer final dentro de esta SDL_Surface. Una vez que esté listo para mostrarse en pantalla, puedes hacer como en el primer caso:
 
 	SDL_UpdateTexture(sdlTexture, NULL, screen->pixels, screen->pitch);
 	SDL_RenderClear(sdlRenderer);
 	SDL_RenderCopy(sdlRenderer, sdlTexture, NULL, NULL);
 	SDL_RenderPresent(sdlRenderer);
 
-Note that texture creation may be both expensive and a limited resource: don't call SDL_CreateTextureFromSurface() every frame. Set up one texture and one surface and update the former from the latter.
+Ten en cuenta que crear texturas no es gratis: no llames SDL_CreateTextureFromSurface() todos los frames. Crea una textura y una surface y actualiza la primera en base a la segunda.
 
-There are more features to the Render API, some of which may be able to replace your application's code: scaling, line drawing, etc. If you are reading this section because you have simple needs beyond blitting surfaces, you might be able to stop poking individual pixels and move everything onto the GPU, which will give your program a significant speed boost and probably simplify your code greatly. 
+La API de Render posee muchas otras características, algunas de las cuales probablemente puedan reemplazar código que antes escribías a mano: escalado, dibujado de líneas, etc. Si tus necesidades a la hora del renderizado no son muy complejas, probablemente te convenga dejar de modificar pixels a mano y mover todo al GPU. Tu programa funcionará más rápido y probablemente puedas simplificar notablemente tu código.
+
+###Other Renderer API notes
