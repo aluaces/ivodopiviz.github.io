@@ -235,3 +235,12 @@ Puedes realizar algunos efectos simples con la Renderer API sin necesidad de man
 * Alpha blending: utiliza SDL_SetSurfaceAlphaMod y SDL_SetTextureAlphaMod en vez de SDL_SetAlpha(). Es posible desactivar alpha blending en surfaces usando SDL_SetSurfaceBlendMode() y en texturas utilizando SDL_SetTextureBlendMode().
 * Colorky: Cuando llames SDL_SetColorKey(), deberás pasarle como parámetro SDL_TRUE en vez de SDL_SRCCOLORKEY.
 * Modulación de color: Algunos renderer soportan alteraciones globales de color (srcC = srcC * color), puedes ver más detalles en SDL_SetTextureColorMod().
+
+###OpenGL
+
+Si ya estabas utilizando OpenGL directamente, la migración es bastante simple. Necesitas cambiar tu llamada a SDL_SetVideoMode() por SDL_CreateWindow() seguida de SDL_GL_CreateContext(). Luego cambia SDL_GL_SwapBuffers() por SDL_GL_SwapWindow(window). Las llamadas de funciones de OpenGL no cambian.
+
+Si utilizabas SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, x), necesitas hacer algunos cambios: ahora existe la función SDL_GL_SetSwapInterval(x) que te permitirá modificar esto en un contexto GL existente.
+
+Ahora SDL 2.0 es posible intercambiar entre modo ventana / pantalla completa sin perder el contexto de OpenGL (hurra!). Puedes controlar esto usando SDL_SetWindowFullscreen().
+
