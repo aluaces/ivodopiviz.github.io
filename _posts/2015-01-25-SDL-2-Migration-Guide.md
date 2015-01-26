@@ -175,4 +175,15 @@ Ahora pongamos esta textura en pantalla:
 
 Y eso es todo. SDL_RenderClear() limpia el contenido del framebuffer (por las dudas de que, digamos, el Steam Overlay lo haya modificado en el cuadro anterior), SDL_RenderCopy() mueve el contenido de la textura al framebuffer (y gracias a SDL_RenderSetLogicalSize(), lo hará de manera escalada/centrada como si el monitor fuera de 640x480) y SDL_RenderPresent() lo presentará en la pantalla.
 
-###If your game wants to blit surfaces to the screen
+###Si tu juego quiere "blitear" surfaces a la pantalla
+
+En este ejemplo suponemos que tu juego basado en SDL 1.2 carga imágenes desde archivo y las guarda en SDLSurfaces, probablemente tratando de ubicarlas en memoria de video utilizando SDL_HWSURFACE. Las cargas una vez y las "bliteas" una y otra vez en el framebuffer tanto como sea necesario, en general sin modificarlas. Como haríamos en un plataformero 2D simple, por poner un ejemplo. En líneas generales, si utilizas tus surfaces como "sprites", probablemente este sea tu caso de uso.
+
+Puedes crear texturas individuales (surfaces ubicadas en memoria de GPU) de la misma manera que hicimos para la textura grande:
+
+	sdlTexture = SDL_CreateTexture(sdlRenderer,
+								SDL_PIXELFORMAT_ARGB8888,
+								SDL_TEXTUREACCESS_STATIC,
+								myWidth, myHeight);
+
+Which does what you'd expect. We use SDL_TEXTUREACCESS_STATIC, because we're going to upload our pixels once instead of over and over. But a more convenient solution might be: 
