@@ -326,3 +326,83 @@ Ahora SDL_CreateThread() recibe un parámetro extra: un numbre para el hilo que 
 ###CDs de audio
 
 La API de CD de SDL 1.2 fue removida completamente y no hay reemplazo. Lo más probable es que no liberes tu música en Audio CD a esta altura, si es que incluso liberas tu aplicación en CD. Puedes usar Ogg Vorbis o algún otro tipo de archivo de audio para tu música, la mayoría de los cuales son soportados por SDL_Mixer.
+
+###Dead platforms
+
+We ripped out a bunch of old platforms, like OS/2 and Mac OS 9. It would be easier to list the ones we still support: Windows (XP and later), Linux, Mac OS X, iOS, Android. In SDL tradition, there are others on the periphery that work but aren't heavily supported, like Haiku and Sony PSP. We'll add any platform that someone sends patches for, but it seemed like it was time to say goodbye to some old friends when moving to the new version. 
+
+###Mobile platforms
+
+There have been, for many years, unofficial ports of SDL 1.2 to iOS and Android. SDL now supports these platforms directly, and the 2.0 API is much better suited to them. Most of the advice you've gotten elsewhere in this document applies, but there are a few other things worth noting.
+
+First, there are certain events that only apply to mobile devices, or better said, apply to the way mobile device OSes tend to operate in a post-iPhone world. We originally tried to map these to the existing SDL events (such as "your application is going to the background" being treated like a desktop window losing focus), but there's a more urgent concern: most of these events need an immediate response, and if the app doesn't give one, the OS will kill your application.
+
+As such, we've added new SDL events for some Android and iOS specific details, but you should set up an SDL event filter to catch them as soon as the OS reports them, because waiting until your next SDL_PollEvent() loop will be too late.
+
+For example, there's SDL_APP_WILLENTERBACKGROUND, which is iOS's applicationWillResignActive(), and if you draw to the screen after this event arrives, iOS terminates your process. So you want to catch this immediately: 
+
+	int SDLCALL myEventFilter(void *userdata, SDL_Event * event)
+	{
+	    if (event->type == SDL_APP_WILLENTERBACKGROUND) {
+	        // free up resources, DON'T DRAW ANY MORE until you're in the foreground again!
+	    }
+	    // etc
+	    return 1;
+	}
+
+	// somewhere near startup...
+
+	// this calls myEventFilter(data, event) as soon as event is generated.
+	SDL_AddEventWatch(myEventFilter, data);
+
+Second, there are real touch events now, instead of trying to map this to mouse input. You can track touches, multiple fingers, and even complex gestures. You probably want to use those. Refer to SDL_touch.h for a list of these functions, and look for SDL_Finger* in SDL_events.h.
+
+There are a handful of other mobile-friendly functions, like SDL_StartTextInput(), which will show the on-screen keyboard. Make use of them.
+
+In addition, there are also Android and iOS specific functions, to let you access platform-specific features that wouldn't make sense in a general API. Refer to SDL_system.h for a list of these functions. 
+
+###RWops
+
+SDL_RWread() and SDL_RWwrite() now return 0 on error instead of -1.
+
+If you wrote your own SDL_RWops implementation, the function signatures have changed. Functions now use Sint64 and size_t instead of int so they can work with large files. In many cases, you can just update your function signatures and keep working as before, but if you had bumped up against these limitations, you might be happy to have a solution. Calling applications should know that the return values have changed.
+
+There is also a size method to RWops, now. It is called SDL_RWsize(). This lets a RWops report the size of the stream without having to make the app seek to zero bytes from the end; in other words, you can report a total size for streams that can't seek. For streams that can't even do that, you can still return -1. 
+
+###Add-on libraries
+
+The official extensions SDL_image, SDL_ttf, SDL_mixer and SDL_net have a version dedicated to SDL 2.0 : SDL2_image, SDL2_ttf, SDL2_mixer and SDL2_net. You may need to download them from the mercurial repositories for the latest fixes. Subsequently, of course, you will have to link e.g. SDL2_image, not SDL_image, to compile your program.
+
+These libraries will not be supporting 1.2 going forward, and any compatibility with 1.2 is likely to vanish at some point from newer versions.
+
+SDL_gfx can also be compiled with 2.0 starting since 2.0.21 (May 2010).
+
+###Summary of some renamed or replaced things
+
+A short cheat sheet where some of the old functions and other stuff went:
+
+* SDL_SetVideoMode(): use SDL_CreateWindow() instead (along with SDL_CreateRenderer() if you want to do classic 2D rendering and not OpenGL)
+
+* SDL_ListModes(): use SDL_GetDisplayMode()/SDL_GetNumDisplayModes() instead
+
+* SDL_UpdateRect()/SDL_Flip(): use SDL_RenderPresent() instead
+
+* SDL_Surface/2D rendering: surfaces still exist, but it is recommended that instead of using SDL_Surfaces, you use SDL_Textures with an 2D accelerated renderer (SDL_CreateRenderer()) where possible
+
+* SDL_VideoInfo: use SDL_GetRendererInfo()/SDL_GetRenderDriverInfo() instead
+
+* SDL_GetCurrentVideoDisplay(): use SDL_GetWindowDisplayIndex() instead
+
+* SDL_VIDEORESIZE event: the new equivalent is SDL_WINDOWEVENT_RESIZE
+
+###Other stuff
+
+There's an enormous amount of new and interesting functionality in SDL 2.0 that 1.2 couldn't even dream of. We've only tried to explain what you might have to do to get your 1.2 program running on 2.0 here, but you should explore the documentation for things that you might have always wished for and, until now, done without. For example, every game I've ever ported ended up with a message box function that looked like this: 
+
+	#if USING_SDL
+	fprintf(stderr, "MSGBOX: %s\n%s\n", title, text);   // oh well.
+	#endif
+
+Now there's SDL_ShowSimpleMessageBox(). You're welcome!
+
+If you skipped ahead, go back and check out all the new features at the overview! 
