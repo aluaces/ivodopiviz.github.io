@@ -337,9 +337,9 @@ Hace bastante que existen ports no oficiales de SDL 1.2 para iOS y Android. Ahor
 
 Lo primero es que existen eventos que sólo aplican en dispositivos móviles o, mejor dicho, que aplican a la manera en la que los sistemas operativos móviles funcionan en el mundo post-iPhone. Originalmente tratábamos de mapear estos comportamientos a eventos ya existentes en SDL (como por ejemplo "tu aplicación pasa a segundo plano" emulado como una ventana perdiendo el foco), pero hay un problema importante: la mayoría de estos eventos requieren una respuesta inmediata y, si la aplicación no la provee, el SO cerrará tu aplicación inmediatamente.
 
-Por eso hemops agregado nuevos eventos de SDL para ciertos detalles específicos de Android e iOS, pero tendrás que configurar un filtro de eventos para detectarlos tan pronto como el SO los reporte, porque si esperas hasta la próxima llamada a SDL_PollEvent() ya será demasiado tarde.
+Por eso hemos agregado nuevos eventos de SDL para ciertos detalles específicos de Android e iOS, pero tendrás que configurar un filtro de eventos para detectarlos tan pronto como el SO los reporte, porque si esperas hasta la próxima llamada a SDL_PollEvent() ya será demasiado tarde.
 
-For example, there's SDL_APP_WILLENTERBACKGROUND, which is iOS's applicationWillResignActive(), and if you draw to the screen after this event arrives, iOS terminates your process. So you want to catch this immediately: 
+Por ejemplo: tenemos SDL_APP_WILLENTERBACKGROUND, que es el equivalente de applicationWillResignActive() en iOS. Si dibujas algo luego de que ese evento se dispare, iOS cerrará tu aplicación. Por eso, necesitas interceptar esto de manera inmediata:
 
 	int SDLCALL myEventFilter(void *userdata, SDL_Event * event)
 	{
