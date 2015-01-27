@@ -317,12 +317,12 @@ You should also check out the new Game Controller API too, because it's cool, an
 
 Support for the older joystick API (/dev/input/js*) for Linux has been dropped from SDL2. SDL2 only supports the newer events API (/dev/input/event*) for joysticks. These events are not normally readable for normal user accounts, so even if joysticks are plugged in you will likely have none detected. This is something that end users will have to configure for themselves.
 
-###Threads
+###Hilos
 
-SDL_KillThread() is gone. It was never safe or reliable. The best replacement is to set a flag that tells a thread it should quit. That thread should check the flag with some frequency, and then the "killing" thread calls SDL_WaitThread() to clean up.
+SDL_KillThread() ya no existe más porque nunca fue lo suficientemente segura o confiable. La mejor manera de reemplazarla es setear un "flag" que le indique a un hilo que debe finalizar. El hilo deberá chequear este flag regularmente y luego el hilo "asesino" deberá llamar a SDL_WaitThread() para limpiar todo.
 
-SDL_CreateThread() takes an extra parameter now, a name for the thread, which can be used by debuggers to identify it. If you don't care about that, just stuff an extra NULL into your function call.
+Ahora SDL_CreateThread() recibe un parámetro extra: un numbre para el hilo que puede ser utilizado por depuradores para identificarlo. Si no te interesa usar eso, puedes simplemente pasarle NULL.
 
-###Audio CDs
+###CDs de audio
 
-The 1.2 CD API is completely gone. There's no replacement. Chances are you aren't shipping your music as CD-Audio tracks on a disc at this point, if you're shipping a disc at all. You can use Ogg Vorbis or some other audio file format for music, many of which are provided by SDL_mixer. 
+La API de CD de SDL 1.2 fue removida completamente y no hay reemplazo. Lo más probable es que no liberes tu música en Audio CD a esta altura, si es que incluso liberas tu aplicación en CD. Puedes usar Ogg Vorbis o algún otro tipo de archivo de audio para tu música, la mayoría de los cuales son soportados por SDL_Mixer.
