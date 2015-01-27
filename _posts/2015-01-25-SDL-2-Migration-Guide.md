@@ -327,9 +327,9 @@ Ahora SDL_CreateThread() recibe un parámetro extra: un numbre para el hilo que 
 
 La API de CD de SDL 1.2 fue removida completamente y no hay reemplazo. Lo más probable es que no liberes tu música en Audio CD a esta altura, si es que incluso liberas tu aplicación en CD. Puedes usar Ogg Vorbis o algún otro tipo de archivo de audio para tu música, la mayoría de los cuales son soportados por SDL_Mixer.
 
-###Dead platforms
+###Plataformas abandonadas
 
-We ripped out a bunch of old platforms, like OS/2 and Mac OS 9. It would be easier to list the ones we still support: Windows (XP and later), Linux, Mac OS X, iOS, Android. In SDL tradition, there are others on the periphery that work but aren't heavily supported, like Haiku and Sony PSP. We'll add any platform that someone sends patches for, but it seemed like it was time to say goodbye to some old friends when moving to the new version. 
+Removimos el soporte para unas cuantas plataformas antiguas, como OS/2 y Mac OS 9. Es más fácil enumerar las que todavía soportamos: Windows (XP y superior), Linux, Mac OS X, iOS y Android. Siguiendo la tradición de SDL, hay algunas otras plataformas externas que funcionan pero no son soportadas de manera completa, como Haiku y Sony PSP. En general, agregamos cualquier plataforma para la cual recibamos parches, pero nos pareció que ya era tiempo de decirle adiós a algunas de ellas al movernos a la nueva versión.
 
 ###Mobile platforms
 
@@ -395,14 +395,14 @@ A short cheat sheet where some of the old functions and other stuff went:
 
 * SDL_VIDEORESIZE event: the new equivalent is SDL_WINDOWEVENT_RESIZE
 
-###Other stuff
+###Lo demás
 
-There's an enormous amount of new and interesting functionality in SDL 2.0 that 1.2 couldn't even dream of. We've only tried to explain what you might have to do to get your 1.2 program running on 2.0 here, but you should explore the documentation for things that you might have always wished for and, until now, done without. For example, every game I've ever ported ended up with a message box function that looked like this: 
+Hay una gran cantidad de cosas nuevas e interesantes en SDL 2.0 sobre las cuales 1.2 ni siquiera hubiera podido soñar. Aquí sólo tratamos de explicar aquello que pudieras tener que hacer para que tu programa compatible con 1.2 funcionara con 2.0, pero realmente es recomendable que explores la documentación. Probablemente ecuentres cosas que te hubiera gustado tener pero descartaste en su momento porque simplemente no existían. Por ejemplo: para cada juego que porté terminé con una función de mensaje de texto similar a esta:
 
 	#if USING_SDL
 	fprintf(stderr, "MSGBOX: %s\n%s\n", title, text);   // oh well.
 	#endif
 
-Now there's SDL_ShowSimpleMessageBox(). You're welcome!
+Ahora puedes usar SDL_ShowSimpleMessageBox(). ¡De nada!
 
-If you skipped ahead, go back and check out all the new features at the overview! 
+¡Si te salteaste alguna parte, puedes volver y chequear todas las funcionalidades nuevas en el resumen!
