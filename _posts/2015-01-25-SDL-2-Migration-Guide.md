@@ -284,3 +284,45 @@ En SDL2, esto funciona un poco distinto. Sólo tienes que llamar:
 	SDL_SetRelativeMouseMode(SDL_TRUE);
 
 ... y SDL se ocupa del resto.
+
+###Eventos
+
+SDL_PushEvent() ahora retorna 1 en caso de éxito en vez de 0.
+
+Las máscaras de evento ahora se especifican como rangos, entonces:
+
+	SDL_PeepEvents(&event, 1, SDL_GETEVENT, SDL_EVENTMASK(SDL_MOUSEBUTTONDOWN));
+
+se convierte en:
+
+	SDL_PeepEvents(&event, 1, SDL_GETEVENT, SDL_MOUSEBUTTONDOWN, SDL_MOUSEBUTTONDOWN);
+
+###Audio
+
+Lo bueno es que, fuera de una sola excepción, SDL 2.0 es completamante compatible con SDL 1.2. Si quieres utilizar las nuevas funcionalidades adelante, pero probablemente puedas compilar y correr tu aplicación sin necesidad de utilizarlas.
+
+Ahora, la excepción: El "callback" de audio ya NO comienza con su bufer inicializado completamente. En todos los casos debes escribir al bufer de manera completa. Si no tienes suficiente audio para hacerlo, tu callback deberá escribir silencio. Si no lo haces, escucharás el audio repetido o simple ruido. Si quieres volver al comportamiento anterior del bufer inicializado desde el vamos, deberás llamar SDL_memset(stream, 0, len) al comienzo de tu callback.
+
+###Joysticks
+
+Joystick events now refer to an SDL_JoystickID. This is because SDL 2.0 can handle joysticks coming and going, as devices are plugged in and pulled out during your game's lifetime, so the index into the device list that 1.2 uses would be meaningless as the available device list changes.
+
+To get an SDL_JoystickID for your opened SDL_Joystick*, call: 
+
+	SDL_JoystickID myID = SDL_JoystickInstanceID(myOpenedStick);
+
+And compare the joystick events' which field against myID. If you aren't using the event queue for joysticks, SDL_JoystickGetAxis() and friends work just like SDL 1.2.
+
+You should also check out the new Game Controller API too, because it's cool, and maybe you did a lot of tap dancing with the 1.2 API that this new code would solve more cleanly. You can find it in SDL_gamecontroller.h. The Game Controller API integrates really nicely with Steam Big Picture Mode: you get automatic configuration of most controllers, and a nice UI if you have to manually configure it. In either case, Steam passes this configuration on to your SDL application.
+
+Support for the older joystick API (/dev/input/js*) for Linux has been dropped from SDL2. SDL2 only supports the newer events API (/dev/input/event*) for joysticks. These events are not normally readable for normal user accounts, so even if joysticks are plugged in you will likely have none detected. This is something that end users will have to configure for themselves.
+
+###Threads
+
+SDL_KillThread() is gone. It was never safe or reliable. The best replacement is to set a flag that tells a thread it should quit. That thread should check the flag with some frequency, and then the "killing" thread calls SDL_WaitThread() to clean up.
+
+SDL_CreateThread() takes an extra parameter now, a name for the thread, which can be used by debuggers to identify it. If you don't care about that, just stuff an extra NULL into your function call.
+
+###Audio CDs
+
+The 1.2 CD API is completely gone. There's no replacement. Chances are you aren't shipping your music as CD-Audio tracks on a disc at this point, if you're shipping a disc at all. You can use Ogg Vorbis or some other audio file format for music, many of which are provided by SDL_mixer. 
