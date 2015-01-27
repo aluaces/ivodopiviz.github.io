@@ -331,13 +331,13 @@ La API de CD de SDL 1.2 fue removida completamente y no hay reemplazo. Lo más p
 
 Removimos el soporte para unas cuantas plataformas antiguas, como OS/2 y Mac OS 9. Es más fácil enumerar las que todavía soportamos: Windows (XP y superior), Linux, Mac OS X, iOS y Android. Siguiendo la tradición de SDL, hay algunas otras plataformas externas que funcionan pero no son soportadas de manera completa, como Haiku y Sony PSP. En general, agregamos cualquier plataforma para la cual recibamos parches, pero nos pareció que ya era tiempo de decirle adiós a algunas de ellas al movernos a la nueva versión.
 
-###Mobile platforms
+###Plataformas móviles
 
-There have been, for many years, unofficial ports of SDL 1.2 to iOS and Android. SDL now supports these platforms directly, and the 2.0 API is much better suited to them. Most of the advice you've gotten elsewhere in this document applies, but there are a few other things worth noting.
+Hace bastante que existen ports no oficiales de SDL 1.2 para iOS y Android. Ahora SDL soporta esas plataformas directamente y la API 2.0 es más apropiada para las mismas. La mayor parte del contenido de este documento es válido en estas plataformas, pero existen algunas cosas que es necesario tener en cuenta.
 
-First, there are certain events that only apply to mobile devices, or better said, apply to the way mobile device OSes tend to operate in a post-iPhone world. We originally tried to map these to the existing SDL events (such as "your application is going to the background" being treated like a desktop window losing focus), but there's a more urgent concern: most of these events need an immediate response, and if the app doesn't give one, the OS will kill your application.
+Lo primero es que existen eventos que sólo aplican en dispositivos móviles o, mejor dicho, que aplican a la manera en la que los sistemas operativos móviles funcionan en el mundo post-iPhone. Originalmente tratábamos de mapear estos comportamientos a eventos ya existentes en SDL (como por ejemplo "tu aplicación pasa a segundo plano" emulado como una ventana perdiendo el foco), pero hay un problema importante: la mayoría de estos eventos requieren una respuesta inmediata y, si la aplicación no la provee, el SO cerrará tu aplicación inmediatamente.
 
-As such, we've added new SDL events for some Android and iOS specific details, but you should set up an SDL event filter to catch them as soon as the OS reports them, because waiting until your next SDL_PollEvent() loop will be too late.
+Por eso hemops agregado nuevos eventos de SDL para ciertos detalles específicos de Android e iOS, pero tendrás que configurar un filtro de eventos para detectarlos tan pronto como el SO los reporte, porque si esperas hasta la próxima llamada a SDL_PollEvent() ya será demasiado tarde.
 
 For example, there's SDL_APP_WILLENTERBACKGROUND, which is iOS's applicationWillResignActive(), and if you draw to the screen after this event arrives, iOS terminates your process. So you want to catch this immediately: 
 
