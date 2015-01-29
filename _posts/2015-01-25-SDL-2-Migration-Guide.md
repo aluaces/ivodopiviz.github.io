@@ -38,7 +38,7 @@ Estas son las características nuevas más importantes de SDL 2.0
 * Soporte básico Drag'n'Drop
 * Soporte para entrada IME y unicode
 
-* Poderoso sistema de macros para asserts
+* (Poderoso sistema de macros para asserts)[https://wiki.libsdl.org/CategoryAssertions]
 * Cambiada la licencia LGPL por zlib
 * Muchas de las molestias de 1.2 ya no existen
 * ¡Y mucho más!
