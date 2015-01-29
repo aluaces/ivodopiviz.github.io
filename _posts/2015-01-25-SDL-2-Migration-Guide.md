@@ -119,7 +119,7 @@ Ahora necesitamos un contexto de renderizado.
 
 El "renderer" abstrae todos los detalles de cómo se dibuja en la ventana. Puede estar utilizando Direct3D, OpenGL, OpenGL ES o "software surfaces", dependiendo del sistema, pero tu código siempre será el mismo. Es posible, sin embargo, forzar un renderer específico. Si deseas forzar la sincronización con vblank para reducir artefactos gráficos, puedes utilizar SDL_RENDERER_PRESENTVSYNC en vez de cero como tercer parámetro. No deberías especificar SDL_WINDOW_OPENGL directamente: si [SDL_CreateRenderer()](https://wiki.libsdl.org/SDL_CreateRenderer) decide utilizar OpengGL, va a actualizar la ventana de manera apropiada.
 
-Ahora que sabes cómo funciona esto, es posible hacerlo en un sólo paso utilizando SDL_CreateWindowAndRenderer(). Un ejemplo simple:
+Ahora que sabes cómo funciona esto, es posible hacerlo en un sólo paso utilizando [SDL_CreateWindowAndRenderer()](https://wiki.libsdl.org/SDL_CreateWindowAndRenderer). Un ejemplo simple:
 
 	SDL_Window *sdlWindow;
 	SDL_Renderer *sdlRenderer;
@@ -131,7 +131,7 @@ Asumiendo que ninguna de las funciones falló (¡siempre hay que chequear NULLs!
 	SDL_RenderClear(sdlRenderer);
 	SDL_RenderPresent(sdlRenderer);
 
-Probablemente imagines cómo funciona esto: dibujamos con color negro (r, g y b en cero, alpha opaco), limpiamos la ventana completa y presentamos la ventana limpia en la pantalla. De la misma manera que antes usaba SDL_UpdateRect() o SDL_Flip(), ahora se utiliza SDL_RenderPresent().
+Probablemente imagines cómo funciona esto: dibujamos con color negro (r, g y b en cero, alpha opaco), limpiamos la ventana completa y presentamos la ventana limpia en la pantalla. De la misma manera que antes usaba SDL_UpdateRect() o SDL_Flip(), ahora se utiliza [SDL_RenderPresent()](https://wiki.libsdl.org/SDL_RenderPresent).
 
 Una cosa más: Como estamos utilizando SDL_WINDOW_FULLSCREEN_DESKTOP, no sabemos realmente el tamaño de la pantalla en la que estamos dibujando. Afortunadamente, no necesitamos saberlo. Una de las mejores cosas de 1.2 es que era posible decirle "Quiero una ventana de 640x480 y no me importa cómo lo logres", incluso si eso implicaba mostrar una ventana pequeña centrada en una resolución más grande.
 
@@ -157,7 +157,7 @@ Para esto, sólo necesitas una SDL_Texture que va a representar la pantalla. Hag
 
 Esto representa una textura en la GPU. La idea es generar cada frame guardando pixels en esta textura, dibujar la textura en la ventana y presentar la misma en la pantalla. SDL_TEXTUREACCESS_STREAMING le indica a SDL que el contenido de esta textura cambiará de manera frecuente.
 
-Anteriormente, probablemente hayas utilizado una SDL_Surface dedicada a la pantalla y luego llamaras SDL_Flip() para mostrarla. Ahora es posible crear un SDL_Surface en RAM en vez de utilizar la que te hubiera dado SDL_SetVideoMode() o incluso simplemente utilizar malloc() para generar un bloque de pixels al cual puedas escribir. Idealmente, tus buffers deberían contener pixels RGBA, pero de todas maneras es posible realizar conversiones.
+Anteriormente, probablemente hayas utilizado una [SDL_Surface](https://wiki.libsdl.org/SDL_Surface) dedicada a la pantalla y luego llamaras SDL_Flip() para mostrarla. Ahora es posible crear una [SDL_Surface](https://wiki.libsdl.org/SDL_Surface) en RAM en vez de utilizar la que te hubiera dado SDL_SetVideoMode() o incluso simplemente utilizar malloc() para generar un bloque de pixels al cual puedas escribir. Idealmente, tus buffers deberían contener pixels RGBA, pero de todas maneras es posible realizar conversiones.
 
 	extern Uint32 *myPixels;  // esto puede ser surface->pixels, un buffer de malloc() o lo que sea.
 
@@ -173,11 +173,11 @@ Ahora pongamos esta textura en pantalla:
 	SDL_RenderCopy(sdlRenderer, sdlTexture, NULL, NULL);
 	SDL_RenderPresent(sdlRenderer);
 
-Y eso es todo. SDL_RenderClear() limpia el contenido del framebuffer (por las dudas de que, digamos, el Steam Overlay lo haya modificado en el cuadro anterior), SDL_RenderCopy() mueve el contenido de la textura al framebuffer (y gracias a SDL_RenderSetLogicalSize(), lo hará de manera escalada/centrada como si el monitor fuera de 640x480) y SDL_RenderPresent() lo presentará en la pantalla.
+Y eso es todo. [SDL_RenderClear()](https://wiki.libsdl.org/SDL_RenderClear) limpia el contenido del framebuffer (por las dudas de que, digamos, el Steam Overlay lo haya modificado en el cuadro anterior), [SDL_RenderCopy()](https://wiki.libsdl.org/SDL_RenderCopy) mueve el contenido de la textura al framebuffer (y gracias a [SDL_RenderSetLogicalSize()](https://wiki.libsdl.org/SDL_RenderSetLogicalSize, lo hará de manera escalada/centrada como si el monitor fuera de 640x480) y [SDL_RenderPresent()](https://wiki.libsdl.org/SDL_RenderPresent) lo presentará en la pantalla.
 
 ###Si tu juego requiere "blitear" surfaces a la pantalla
 
-En este ejemplo suponemos que tu juego basado en SDL 1.2 carga imágenes desde archivo y las guarda en SDLSurfaces, probablemente tratando de ubicarlas en memoria de video utilizando SDL_HWSURFACE. Las cargas una vez y las "bliteas" una y otra vez en el framebuffer tanto como sea necesario, en general sin modificarlas. Como haríamos en un plataformero 2D simple, por poner un ejemplo. En líneas generales, si utilizas tus surfaces como "sprites", probablemente este sea tu caso de uso.
+En este ejemplo suponemos que tu juego basado en SDL 1.2 carga imágenes desde archivo y las guarda en [SDLSurfaces](https://wiki.libsdl.org/SDL_Surface), probablemente tratando de ubicarlas en memoria de video utilizando SDL_HWSURFACE. Las cargas una vez y las "bliteas" una y otra vez en el framebuffer tanto como sea necesario, en general sin modificarlas. Como haríamos en un plataformero 2D simple, por poner un ejemplo. En líneas generales, si utilizas tus surfaces como "sprites", probablemente este sea tu caso de uso.
 
 Puedes crear texturas individuales (surfaces ubicadas en memoria de GPU) de la misma manera que hicimos para la textura grande:
 
@@ -186,11 +186,11 @@ Puedes crear texturas individuales (surfaces ubicadas en memoria de GPU) de la m
 								SDL_TEXTUREACCESS_STATIC,
 								myWidth, myHeight);
 
-En este caso, utilizamos SDL_TEXTUREACCESS_STATIC, porque vamos a "subir" los pixels sólo una vez y no repetidas veces. Pero una una mejor solución sería:
+En este caso, utilizamos **SDL_TEXTUREACCESS_STATIC**, porque vamos a "subir" los pixels sólo una vez y no repetidas veces. Pero una una mejor solución sería:
 
 	sdlTexture = SDL_CreateTextureFromSurface(sdlRenderer, mySurface);
 
-De esta manera, cargas tu SDL_Surface de la manera usual pero al final creamos una textura a partur de la misma. Una vez que tienes tu SDL_Texture es posible librerar la surface original.
+De esta manera, cargas tu [SDL_Surface](https://wiki.libsdl.org/SDL_Surface) de la manera usual pero al final creamos una textura a partur de la misma. Una vez que tienes tu [SDL_Texture](https://wiki.libsdl.org/SDL_Texture) es posible librerar la surface original.
 
 Para este momento, tu juego utilizando SDL 1.2 tendría unas cuantas SDL_Surfaces que dibujarias en la surface de pantalla utilizando SDL_BlitSurface() para componer el framebuffer final, eventualmente utilizando SDL_Flip() para presentarlo en pantalla. En SDL 2.0 tendrás SDL_Textures que vas a copiar a tu Renderer con SDL_RenderCopy() para componer el mismo framebuffer, presentándolo en pantalla a su vez con SDL_RenderPresent(). Así de simple. Si nuncas modificas dichas texturas, probablemente notes un aumento dramático en tu framerate.
 
