@@ -49,7 +49,7 @@ La página de Introducción posee una lista más exhaustiva de las característi
 
 Los mejores lugares para ver más información son:
 
-* esta wiki :)
+* [El wiki de SDL](https://wiki.libsdl.org) :)
 * los tests incluídos con SDL, en el directorio test/ ([ver online](http://hg.libsdl.org/SDL/file/default/test))
 * la [lista de correo](http://lists.libsdl.org/listinfo.cgi/sdl-libsdl.org) de SDL
 
