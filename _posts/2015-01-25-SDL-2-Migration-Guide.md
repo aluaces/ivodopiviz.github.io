@@ -204,7 +204,7 @@ La buena noticia es que la API de [SDL_Surface](https://wiki.libsdl.org/SDL_Surf
 
 A esto:
 
-	// if all this hex scares you, check out SDL_PixelFormatEnumToMasks()!
+	// si no quieres utilizar hexadecimal, puedes usar SDL_PixelFormatEnumToMasks()!
 	SDL_Surface *screen = SDL_CreateRGBSurface(0, 640, 480, 32,
 										0x00FF0000,
 										0x0000FF00,
