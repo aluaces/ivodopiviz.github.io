@@ -50,8 +50,8 @@ La página de Introducción posee una lista más exhaustiva de las característi
 Los mejores lugares para ver más información son:
 
 * esta wiki :)
-* los tests incluídos con SDL, en el directorio test/ (ver online)
-* las lista de correo de SDL
+* los tests incluídos con SDL, en el directorio test/ ([ver online](http://hg.libsdl.org/SDL/file/default/test))
+* la [lista de correo](http://lists.libsdl.org/listinfo.cgi/sdl-libsdl.org) de SDL
 
 ##Migrando de SDL 1.2 a 2.0
 
@@ -61,8 +61,8 @@ No hay una capa de compatibilidad en SDL2. Si una API cambió en 2.0, quiere dec
 
 No existe SDL_main! Bueno, en realidad existe, y ahora es lo que siempre se supuso que debía ser: un prqueño trozo de código que oculta la differencia entre main() y WinMain() en Windows. No posee código de inicialización y es completamente opcional- Esto significa que ahora es posible utilizar SDL sin sobreescribir tu main, lo cual es bueno para plugins que utilicen SDL, o lenguajes script que utilicen SDL como un módulo. Todo lo que en 1.2 se hacía en SDL_main ahora se hace en SDL_Init(), donde corresponde.
 
-El "paracaídas" de SDL no existe más. Lo que en 1.2 se llamaba SDL_INIT_NOPARACHUTE es la opción por defecto ahora. Causaba problemas en caso de que hubiera problemas en threas que no fueran el principal así como con aplicaciones que utilizara su propio sistema de señales/manejo de excepciones. Lamentablemente, algunas plataformas no limpian el sistema de video a pantalla completa en caso de errores críticos, así que deberías configurar un manejador de crashes propio o llamar a SDL_Quit() en un atexit() de ser necesario.
-Ten en cuenta que en plataformas Unix, SDL sigue interceptando SIGINT y lo convierte en un evento SDL_QUIT.
+El "paracaídas" de SDL no existe más. Lo que en 1.2 se llamaba SDL_INIT_NOPARACHUTE es la opción por defecto ahora. Causaba problemas en caso de que hubiera problemas en threas que no fueran el principal así como con aplicaciones que utilizara su propio sistema de señales/manejo de excepciones. Lamentablemente, algunas plataformas no limpian el sistema de video a pantalla completa en caso de errores críticos, así que deberías configurar un manejador de crashes propio o llamar a [SDL_Quit()](https://wiki.libsdl.org/SDL_Quit) en un atexit() de ser necesario.
+Ten en cuenta que en plataformas Unix, SDL sigue interceptando SIGINT y lo convierte en un evento [SDL_QUIT](https://wiki.libsdl.org/SDL_EventType).
 
 ##Video
 
@@ -93,17 +93,17 @@ Ahora debería ser:
 							640, 480,
 							SDL_WINDOW_FULLSCREEN | SDL_WINDOW_OPENGL);
 
-Notarás que es bastante similar a 1.2. La diferencia es que ahora es posible tener varias ventanas (si quieres) y tienes más control sobre ellas. SDL_WM_SetCaption ya no existe, porque es necesatio que cada ventana pueda tener un título propio (puedes cambiarlo usando SDL_SetWindowTitle()) y que sea posible darle una posición específica. En este caso utilizamos SDL_WINDOWPOS_UNDEFINED porque no nos preocupa dónde se ubique la ventana. También es posible utilizar SDL_WINDOWPOS_CENTERED.
+Notarás que es bastante similar a 1.2. La diferencia es que ahora es posible tener varias ventanas (si quieres) y tienes más control sobre ellas. SDL_WM_SetCaption ya no existe, porque es necesatio que cada ventana pueda tener un título propio (puedes cambiarlo usando [SDL_SetWindowTitle()](https://wiki.libsdl.org/SDL_SetWindowTitle)) y que sea posible darle una posición específica. En este caso utilizamos SDL_WINDOWPOS_UNDEFINED porque no nos preocupa dónde se ubique la ventana. También es posible utilizar SDL_WINDOWPOS_CENTERED.
 
 Además, es posible especificar una pantalla: SDL2 te permite trabajar con equipos con monitores múltiples. No es necesario que te preocupes por eso por ahora, sin embargo.
 
-Ahora que tu ventana esta lista, hablemos de estrategia. SDL2 sigue teniendo SDL_Surface pero, de ser posible, deberías utilizar SDL_Texture. Ahora las "surface" siempre se encuentran en RAM y son controladas por el CPU, así que es mejor evitarlas. SDL2 tiene una API de renderizado nueva, pensada para juegos 2D simples pero por sobre todo para utilizar el GPU y la memoria de video lo más posible. Incluso si sólo deseas mostrar en pantalla tu render por software, tienes el siguiente beneficio: de ser posible se utilizará OpenGL o Direct3D lo cual significa que tendrás "blits" más rápidos, reescalado de pantalla "gratis" y será posible utilizar el Steam Overlay.
+Ahora que tu ventana esta lista, hablemos de estrategia. SDL2 sigue teniendo [SDL_Surface](https://wiki.libsdl.org/SDL_Surface) pero, de ser posible, deberías utilizar [SDL_Texture](https://wiki.libsdl.org/SDL_Texture). Ahora las "surface" siempre se encuentran en RAM y son controladas por el CPU, así que es mejor evitarlas. SDL2 tiene una API de renderizado nueva, pensada para juegos 2D simples pero por sobre todo para utilizar el GPU y la memoria de video lo más posible. Incluso si sólo deseas mostrar en pantalla tu render por software, tienes el siguiente beneficio: de ser posible se utilizará OpenGL o Direct3D lo cual significa que tendrás "blits" más rápidos, reescalado de pantalla "gratis" y será posible utilizar el Steam Overlay.
 
 El procedimiento ahora es así:
 
-Como ya dijimos, en vez de SDL_SetVideoMode() utilizamos SDL_CreateWindow(). ¿Pero qué resolución utilizamos? Si tu juego está fijo a 640x480, por ejemplo, seguro pasaba que ciertos monitores no podían poner ese tamaño en pantalla completa y en ventana tu juego se veía demasiado pequeño. Con SDL2 es posible solucionar eso.
+Como ya dijimos, en vez de SDL_SetVideoMode() utilizamos [SDL_CreateWindow()](https://wiki.libsdl.org/SDL_CreateWindow). ¿Pero qué resolución utilizamos? Si tu juego está fijo a 640x480, por ejemplo, seguro pasaba que ciertos monitores no podían poner ese tamaño en pantalla completa y en ventana tu juego se veía demasiado pequeño. Con SDL2 es posible solucionar eso.
 
-Ya no utilizamos SDL_ListModes(). Hay algo parecido en SDL2 (llamar SDL_GetDisplayMode() en un bucle tantas veces como diga SDL_GetNumDisplayModes()), pero en vez de eso vamos a utilizar una nueva característica llamada "escritorio a pantalla completa" que básicamente le dice a SDL: "dame la pantalla completa y no cambies la resolución". Para nuestro juego a 640x480, sería algo así:
+Ya no utilizamos SDL_ListModes(). Hay algo parecido en SDL2 (llamar [SDL_GetDisplayMode()](https://wiki.libsdl.org/SDL_GetDisplayMode) en un bucle tantas veces como diga [SDL_GetNumDisplayModes()](https://wiki.libsdl.org/SDL_GetNumDisplayModes)), pero en vez de eso vamos a utilizar una nueva característica llamada "escritorio a pantalla completa" que básicamente le dice a SDL: "dame la pantalla completa y no cambies la resolución". Para nuestro juego a 640x480, sería algo así:
 
 	SDL_Window *sdlWindow = SDL_CreateWindow(title,
 								SDL_WINDOWPOS_UNDEFINED,
@@ -117,7 +117,7 @@ Ahora necesitamos un contexto de renderizado.
 
 	SDL_Renderer *renderer = SDL_CreateRenderer(sdlWindow, -1, 0);
 
-El "renderer" abstrae todos los detalles de cómo se dibuja en la ventana. Puede estar utilizando Direct3D, OpenGL, OpenGL ES o "software surfaces", dependiendo del sistema, pero tu código siempre será el mismo. Es posible, sin embargo, forzar un renderer específico. Si deseas forzar la sincronización con vblank para reducir artefactos gráficos, puedes utilizar SDL_RENDERER_PRESENTVSYNC en vez de cero como tercer parámetro. No deberías especificar SDL_WINDOW_OPENGL directamente: si SDL_CreateRenderer() decide utilizar OpengGL, va a actualizar la ventana de manera apropiada.
+El "renderer" abstrae todos los detalles de cómo se dibuja en la ventana. Puede estar utilizando Direct3D, OpenGL, OpenGL ES o "software surfaces", dependiendo del sistema, pero tu código siempre será el mismo. Es posible, sin embargo, forzar un renderer específico. Si deseas forzar la sincronización con vblank para reducir artefactos gráficos, puedes utilizar SDL_RENDERER_PRESENTVSYNC en vez de cero como tercer parámetro. No deberías especificar SDL_WINDOW_OPENGL directamente: si [SDL_CreateRenderer()](https://wiki.libsdl.org/SDL_CreateRenderer) decide utilizar OpengGL, va a actualizar la ventana de manera apropiada.
 
 Ahora que sabes cómo funciona esto, es posible hacerlo en un sólo paso utilizando SDL_CreateWindowAndRenderer(). Un ejemplo simple:
 
