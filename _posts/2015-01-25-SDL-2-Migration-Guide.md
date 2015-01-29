@@ -404,3 +404,5 @@ Hay una gran cantidad de cosas nuevas e interesantes en SDL 2.0 sobre las cuales
 Ahora puedes usar [SDL_ShowSimpleMessageBox()](https://wiki.libsdl.org/SDL_ShowSimpleMessageBox). ¡De nada!
 
 ¡Si te salteaste alguna parte, puedes volver y chequear todas las funcionalidades nuevas en [el resumen](https://wiki.libsdl.org/MigrationGuide#Overview_of_new_features)!
+
+Nota: No dudes comunicarme cualquier problema o correción sobre la traducción de esta guía. Puedes dejar un comentario en esta misma página o contactarme directamente a través de alguno de los servicios al pie :)
