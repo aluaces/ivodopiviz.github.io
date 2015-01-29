@@ -369,13 +369,13 @@ Si escribiste tu propia implementación de SDL_RWops, ten en cuenta que las decl
 
 También se agregó a RWops un método para calcular tamaño: SDL_RWsize(). Esto permite a un RWops reportar el tamaño del "stream" sin obligar a la aplicación a realizar un "seek" hasta los cero bytes desde el final; en otras palabras, puedes reportar un tamaño para aquellas streams que no soporten seek. Si ni siquiera esto es posible, puedes retornar -1.
 
-###Add-on libraries
+##Librerías complementarias
 
-The official extensions SDL_image, SDL_ttf, SDL_mixer and SDL_net have a version dedicated to SDL 2.0 : SDL2_image, SDL2_ttf, SDL2_mixer and SDL2_net. You may need to download them from the mercurial repositories for the latest fixes. Subsequently, of course, you will have to link e.g. SDL2_image, not SDL_image, to compile your program.
+Las extensiones oficiales SDL_image, SDL_ttf, SDL_mixer y SDL_net ya tienen versiones correspondientes a SDL 2.0: SDL2_image, SDL2_ttf, SDL2_mixer y SDL2_net. Puedes que tengas que bajarlas desde los repositorios de mercurial para tener los últimos arreglos. Ahora tu programa deberá linkear a, por ejemplo, SDL2_image en vez de SDL_image para poder compilar.
 
-These libraries will not be supporting 1.2 going forward, and any compatibility with 1.2 is likely to vanish at some point from newer versions.
+De ahora en más, estas librerías no darán más soporte a 1.2 y la compatibilidad con 1.2 probablemente desaparezca eventualmente con las nuevas versiones.
 
-SDL_gfx can also be compiled with 2.0 starting since 2.0.21 (May 2010).
+A partir de la versión 2.0.21 (Mayo 2010), es posible compilar SDL_gfx con SDL 2.0.
 
 ###Resumen de cosas renombradas o reemplazadas
 
