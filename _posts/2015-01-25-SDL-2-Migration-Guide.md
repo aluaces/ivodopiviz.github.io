@@ -363,11 +363,11 @@ Finalmente, hay algunas funciones específicas de Android e iOS para permitirte 
 
 ###RWops
 
-SDL_RWread() and SDL_RWwrite() now return 0 on error instead of -1.
+Tanto SDL_RWread() como SDL_RWwrite() ahora retornan 0 en caso de error en vez de -1.
 
-If you wrote your own SDL_RWops implementation, the function signatures have changed. Functions now use Sint64 and size_t instead of int so they can work with large files. In many cases, you can just update your function signatures and keep working as before, but if you had bumped up against these limitations, you might be happy to have a solution. Calling applications should know that the return values have changed.
+Si escribiste tu propia implementación de SDL_RWops, ten en cuenta que las declaraciones de las funciones cambiaron. Ahora utilizan Sint64 y size_t en vez de int para poder utilizar archivos grandes. En muchos casos, deberías poder actualizar las declaraciones y ya, pero si te habías chocado con estos problemas, seguro te alegrarás de saber que ya están solucionados. Las aplicaciones que invoquen a dichas funciones deben estar al tanto que los valores de retorno han cambiado.
 
-There is also a size method to RWops, now. It is called SDL_RWsize(). This lets a RWops report the size of the stream without having to make the app seek to zero bytes from the end; in other words, you can report a total size for streams that can't seek. For streams that can't even do that, you can still return -1. 
+También se agregó a RWops un método para calcular tamaño: SDL_RWsize(). Esto permite a un RWops reportar el tamaño del "stream" sin obligar a la aplicación a realizar un "seek" hasta los cero bytes desde el final; en otras palabras, puedes reportar un tamaño para aquellas streams que no soporten seek. Si ni siquiera esto es posible, puedes retornar -1.
 
 ###Add-on libraries
 
