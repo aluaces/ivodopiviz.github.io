@@ -7,7 +7,7 @@ title: Guía de migración a SDL 2.0
 
 Luego de muchos años de desarrollo, ¡SDL 2.0 ha sido finalmente liberada!
 
-Estamos bastante orgullosos de esto, y nos gustaría que los juegos que utilizan SDL 1.2 migraran rápido. Como sabemos que puede ser una tarea intimidante, este documento es una simple guía de cómo migrar a la nueva librería. Creemos que descubrirás que no es tan difícil como piensas y, muchas veces, simplemente tendrás que reemplazar algunos llamados a función o deshacer "hacks" en tu código causados por deficiencias de la versión 1.2.
+Estamos bastante orgullosos de esto, y nos gustaría que los juegos que utilizan SDL 1.2 migraran rápido. Como sabemos que puede ser una tarea intimidante, este documento es una simple guía de cómo migrar a la nueva biblioteca. Creemos que descubrirás que no es tan difícil como piensas y, muchas veces, simplemente tendrás que reemplazar algunos llamados a función o deshacer "hacks" en tu código causados por deficiencias de la versión 1.2.
 
 Creemos que SDL 2.0 va a satisfacerte tanto por sus características nuevas y por una mejor experiencia con respecto a SDL 1.2. Este documento no trata de cubrir todas las funcionalidades nuevas de SDL2 - que son muchas - sino sólo aquellas cosas que necesitas para empezar a trabajar. Una vez que hayas portado tu código, no dudes en chequear todo lo nuevo: probablemente quieras utilizarlo en tus aplicaciones.
 
@@ -37,7 +37,6 @@ Estas son las características nuevas más importantes de SDL 2.0
 * Soporte de portapapeles
 * Soporte básico Drag'n'Drop
 * Soporte para entrada IME y unicode
-
 * [Poderoso sistema de macros para asserts](https://wiki.libsdl.org/CategoryAssertions)
 * Cambiada la licencia LGPL por zlib
 * Muchas de las molestias de 1.2 ya no existen
@@ -272,7 +271,7 @@ SDL_GetKeyState() ha sido renombrada a [SDL_GetKeyboardState()](https://wiki.lib
 
 Ahora veamos entrada de ratón.
 
-El primer cambio, básicamente, es que la rueda del ratón ya no es tratada como un botón. Se trataba de un error histórico en la librería y lo corregimos en SDL 2.0. Ahora deberás chequear eventos [SDL_MOUSEWHEEL](https://wiki.libsdl.org/SDL_EventType). Hay soporte tanto para ruedas verticales como horizontales y algunas plataformas pueden reportar scroll con dos dedos en trackpads como eventos de rueda de ratón. Ya no recibirás eventos [SDL_BUTTONDOWN](https://wiki.libsdl.org/SDL_EventType) relacionados con la rueda y ahora los botones 4 y 5 son tratados como verdaderos eventos de botón de ratón.
+El primer cambio, básicamente, es que la rueda del ratón ya no es tratada como un botón. Se trataba de un error histórico en la biblioteca y lo corregimos en SDL 2.0. Ahora deberás chequear eventos [SDL_MOUSEWHEEL](https://wiki.libsdl.org/SDL_EventType). Hay soporte tanto para ruedas verticales como horizontales y algunas plataformas pueden reportar scroll con dos dedos en trackpads como eventos de rueda de ratón. Ya no recibirás eventos [SDL_BUTTONDOWN](https://wiki.libsdl.org/SDL_EventType) relacionados con la rueda y ahora los botones 4 y 5 son tratados como verdaderos eventos de botón de ratón.
 
 Si tu juego requería que el mouse se desplazara indefinidamente en una dirección, por ejemplo para permitirle al jugador en un FPS girar por siempre sin que el ratón se detuviera al borde de la pantalla, probablemente ocultabas el cursor e interceptabas la entrada:
 
@@ -369,11 +368,11 @@ Si escribiste tu propia implementación de [SDL_RWops](https://wiki.libsdl.org/S
 
 También se agregó a RWops un método para calcular tamaño: [SDL_RWsize()](https://wiki.libsdl.org/SDL_RWsize). Esto permite a un RWops reportar el tamaño del "stream" sin obligar a la aplicación a realizar un "seek" hasta los cero bytes desde el final; en otras palabras, puedes reportar un tamaño para aquellas streams que no soporten seek. Si ni siquiera esto es posible, puedes retornar -1.
 
-##Librerías complementarias
+##Bibliotecas complementarias
 
 Las extensiones oficiales SDL_image, SDL_ttf, SDL_mixer y SDL_net ya tienen versiones correspondientes a SDL 2.0: SDL2_image, SDL2_ttf, SDL2_mixer y SDL2_net. Puedes que tengas que bajarlas desde los [repositorios de mercurial](http://hg.libsdl.org/) para tener los últimos arreglos. Ahora tu programa deberá linkear a, por ejemplo, SDL2_image en vez de SDL_image para poder compilar.
 
-De ahora en más, estas librerías no darán más soporte a 1.2 y la compatibilidad con 1.2 probablemente desaparezca eventualmente con las nuevas versiones.
+De ahora en más, estas bibliotecas no darán más soporte a 1.2 y la compatibilidad con 1.2 probablemente desaparezca eventualmente con las nuevas versiones.
 
 A partir de la versión 2.0.21 (Mayo 2010), es posible compilar [SDL_gfx](http://www.ferzkopp.net/joomla/content/view/19/14/) con SDL 2.0.
 
