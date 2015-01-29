@@ -377,23 +377,21 @@ These libraries will not be supporting 1.2 going forward, and any compatibility 
 
 SDL_gfx can also be compiled with 2.0 starting since 2.0.21 (May 2010).
 
-###Summary of some renamed or replaced things
+###Resumen de cosas renombradas o reemplazadas
 
-A short cheat sheet where some of the old functions and other stuff went:
+* SDL_SetVideoMode(): usa SDL_CreateWindow() (junto con SDL_CreateRenderer() si quieres hacer 2D clásico en vez de OpenGL)
 
-* SDL_SetVideoMode(): use SDL_CreateWindow() instead (along with SDL_CreateRenderer() if you want to do classic 2D rendering and not OpenGL)
+* SDL_ListModes(): usa SDL_GetDisplayMode()/SDL_GetNumDisplayModes()
 
-* SDL_ListModes(): use SDL_GetDisplayMode()/SDL_GetNumDisplayModes() instead
+* SDL_UpdateRect()/SDL_Flip(): usa SDL_RenderPresent()
 
-* SDL_UpdateRect()/SDL_Flip(): use SDL_RenderPresent() instead
+* SDL_Surface/2D rendering: todavía hay surfaces, pero es recomendable que uses SDL_Textures con un renderer 2D acelerado (SDL_CreateRenderer()) de ser posible.
 
-* SDL_Surface/2D rendering: surfaces still exist, but it is recommended that instead of using SDL_Surfaces, you use SDL_Textures with an 2D accelerated renderer (SDL_CreateRenderer()) where possible
+* SDL_VideoInfo: usa SDL_GetRendererInfo()/SDL_GetRenderDriverInfo()
 
-* SDL_VideoInfo: use SDL_GetRendererInfo()/SDL_GetRenderDriverInfo() instead
+* SDL_GetCurrentVideoDisplay(): usa SDL_GetWindowDisplayIndex()
 
-* SDL_GetCurrentVideoDisplay(): use SDL_GetWindowDisplayIndex() instead
-
-* SDL_VIDEORESIZE event: the new equivalent is SDL_WINDOWEVENT_RESIZE
+* evento SDL_VIDEORESIZE: usa su equivalente SDL_WINDOWEVENT_RESIZE
 
 ###Lo demás
 
