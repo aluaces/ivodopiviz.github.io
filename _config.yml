@@ -6,7 +6,7 @@
 name: Iván Vodopiviz
 
 # Short bio or description (displayed in the header)
-description: game developer, software tinkerer
+description: game developer, serial tinkerer
 
 # URL of your avatar or profile pic (you could use your GitHub profile pic)
 avatar: https://pbs.twimg.com/profile_images/378800000181716432/a0a6fef2df8ab5a4fda99dd11c8daf24.jpeg
@@ -23,7 +23,7 @@ footer-links:
   flickr: 
   github: ivodopiviz
   instagram: 
-  linkedin: 
+  linkedin: ivanvodopiviz
   pinterest: 
   rss: # just type anything here for a working RSS icon, make sure you set the "url" above!
   twitter: ivodopiviz
@@ -33,7 +33,7 @@ footer-links:
 disqus: ivodopiviz
 
 # Enter your Google Analytics web tracking code (e.g. UA-2110908-2) to activate tracking
-google_analytics: 
+google_analytics: UA-59100218-1
 
 # Your website URL (e.g. http://barryclark.github.io or http://www.barryclark.co)
 # Used for Sitemap.xml and your RSS feed
