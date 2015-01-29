@@ -355,11 +355,11 @@ Por ejemplo: tenemos SDL_APP_WILLENTERBACKGROUND, que es el equivalente de appli
 	// this calls myEventFilter(data, event) as soon as event is generated.
 	SDL_AddEventWatch(myEventFilter, data);
 
-Second, there are real touch events now, instead of trying to map this to mouse input. You can track touches, multiple fingers, and even complex gestures. You probably want to use those. Refer to SDL_touch.h for a list of these functions, and look for SDL_Finger* in SDL_events.h.
+Además, ahora hay eventos de toque reales en vez de mapear esto al ratón. Puedes rastrear toques, varios dedos e incluso gestos complejos. Puedes ver la lista completa de funciones en SDL_touch.h y eventos SDL_Finger* en SDL_events.h.
 
-There are a handful of other mobile-friendly functions, like SDL_StartTextInput(), which will show the on-screen keyboard. Make use of them.
+Hay algunas otras funciones pensadas para mobile, como SDL_StartTextInput() que mostrarán el teclado en pantalla. Úsalas.
 
-In addition, there are also Android and iOS specific functions, to let you access platform-specific features that wouldn't make sense in a general API. Refer to SDL_system.h for a list of these functions. 
+Finalmente, hay algunas funciones específicas de Android e iOS para permitirte acceder a funcionalidades específicas de cada plataforma que no tendría mucho sentido agregar en una API general. Puedes ver la lista de estas funciones en SDL_system.h.
 
 ###RWops
 
